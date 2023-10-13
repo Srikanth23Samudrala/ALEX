@@ -1,0 +1,190 @@
+doctype html
+html(lang="en")
+  head
+    meta(charset="UTF-8")
+    meta(name="viewport", content="width=device-width, initial-scale=1.0")
+    title Game Quiz - ALEX Project
+    link(href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css", rel="stylesheet")
+    link(href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.0/css/all.min.css", rel="stylesheet")
+    style.
+      .quiz-container {
+          border: 1px solid #ccc;
+          padding: 20px;
+          margin: 10px 0;
+      }
+ 
+  body
+    // Navigation menu
+    include ./includes/navbar.pug
+
+    // Game Quiz Carousel
+    section#game-quiz.container
+      h2 Game Quiz
+
+      // Quiz Questions Carousel
+      .quiz-carousel.carousel.slide(data-ride="carousel")
+        .carousel-inner
+          .quiz-container.carousel-item.active
+            h3 Question 1
+            p What is the capital of France?
+            ul.list-group
+              li.list-group-item
+                label
+                  input(type="radio", name="q1", value="Paris")
+                  | Paris
+              li.list-group-item
+                label
+                  input(type="radio", name="q1", value="London")
+                  | London
+              li.list-group-item
+                label
+                  input(type="radio", name="q1", value="Berlin")
+                  | Berlin
+              li.list-group-item
+                label
+                  input(type="radio", name="q1", value="Madrid")
+                  | Madrid
+            // Timer for Question 1
+            p(id="timer1") Time left: 10 seconds
+            // Score for Question 1
+            p(id="score1") Score: 0
+
+          .quiz-container.carousel-item
+            h3 Question 2
+            p Which planet is known as the Red Planet?
+            ul.list-group
+              li.list-group-item
+                label
+                  input(type="radio", name="q2", value="Mars")
+                  | Mars
+              li.list-group-item
+                label
+                  input(type="radio", name="q2", value="Venus")
+                  | Venus
+              li.list-group-item
+                label
+                  input(type="radio", name="q2", value="Earth")
+                  | Earth
+              li.list-group-item
+                label
+                  input(type="radio", name="q2", value="Jupiter")
+                  | Jupiter
+            // Timer for Question 2
+            p(id="timer2") Time left: 10 seconds
+            // Score for Question 2
+            p(id="score2") Score: 0
+
+        // Add more questions here
+
+        a.carousel-control-prev(href="#game-quiz", role="button", data-slide="prev")
+          span.carousel-control-prev-icon(aria-hidden="true")
+          span.sr-only Previous
+        a.carousel-control-next(href="#game-quiz", role="button", data-slide="next")
+          span.carousel-control-next-icon(aria-hidden="true")
+          span.sr-only Next
+
+    script(src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js")
+    script.
+      // Set the duration for each question (in milliseconds)
+      const questionDuration = 10000; // 10 seconds
+      let score1 = 0;
+      let score2 = 0;
+
+      // Function to update the timer
+      const updateTimer = (timerId, remainingTime) => {
+        document.getElementById(timerId).textContent = `Time left: ${remainingTime / 1000} seconds`;
+      };
+
+      // Function to update the score
+      const updateScore = (scoreId, score) => {
+        document.getElementById(scoreId).textContent = `Score: ${score}`;
+      };
+
+      // Initialize the carousel
+      const carousel = new bootstrap.Carousel(document.querySelector('.quiz-carousel'));
+
+      // Function to advance the carousel to the next question
+      const advanceCarousel = (timerId, scoreId) => {
+        carousel.next();
+        // Reset timer and score for the next question
+        updateTimer(timerId, questionDuration);
+        updateScore(scoreId, 0);
+      };
+
+      // Set an interval for the timer
+      const timer1 = setInterval(() => {
+        questionDuration1 -= 1000;
+        updateTimer("timer1", questionDuration1);
+        if (questionDuration1 <= 0) {
+          // Time's up, advance to the next question
+          clearInterval(timer1);
+          advanceCarousel("timer2", "score1");
+        }
+      }, 1000);
+
+      // Set an interval for the timer of Question 2
+      let questionDuration2 = questionDuration;
+      const timer2 = setInterval(() => {
+        questionDuration2 -= 1000;
+        updateTimer("timer2", questionDuration2);
+        if (questionDuration2 <= 0) {
+          // Time's up, advance to the next question
+          clearInterval(timer2);
+          advanceCarousel("timer3", "score2");
+        }
+      }, 1000);
+
+      // Add more timers for additional questions here
+      // Add more timers for additional questions here
+
+      // Function to check the selected answer and update the score
+      const checkAnswer = (question, score, answer) => {
+        const selectedAnswer = document.querySelector(`input[name=${question}]:checked`);
+        if (selectedAnswer) {
+          if (selectedAnswer.value === answer) {
+            score += 1;
+          }
+        }
+        return score;
+      };
+
+      // Function to handle advancing to the next question
+      const nextQuestion = (questionId, timerId, scoreId, nextQuestionId) => {
+        clearInterval(questionId);
+        advanceCarousel(timerId, scoreId);
+        if (nextQuestionId) {
+          startTimer(nextQuestionId, timerId, scoreId);
+        }
+      };
+
+      // Start the timer for Question 1
+      startTimer(timer1, "timer1", "score1");
+
+      // Handle submission of Question 1
+      const submit1 = document.querySelector("#submit1");
+      submit1.addEventListener("click", () => {
+        score1 = checkAnswer("q1", score1, "Paris");
+        updateScore("score1", score1);
+        nextQuestion(timer1, "timer1", "score1", timer2);
+      });
+
+      // Handle submission of Question 2
+      const submit2 = document.querySelector("#submit2");
+      submit2.addEventListener("click", () => {
+        score2 = checkAnswer("q2", score2, "Mars");
+        updateScore("score2", score2);
+        // Add more questions here with similar code structure
+      });
+
+      // Function to start the timer for a question
+      function startTimer(questionId, timerId, scoreId) {
+        let questionDuration1 = questionDuration;
+        const timer1 = setInterval(() => {
+          questionDuration1 -= 1000;
+          updateTimer(timerId, questionDuration1);
+          if (questionDuration1 <= 0) {
+            clearInterval(timer1);
+            nextQuestion(timer1, timerId, scoreId, null);
+          }
+        }, 1000);
+      }
