@@ -8,15 +8,37 @@ html(lang="en")
     link(href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.0/css/all.min.css", rel="stylesheet")
   body
     // Navigation menu (You can include the navigation menu here)
-    include ./includes/navbar.pug
+    nav.navbar.navbar-expand-lg.navbar-light.bg-light
+      a.navbar-brand(href="/") ALEX
+      ul.nav.nav-tabs.ml-auto
+        li.nav-item
+          a.nav-link(href="/game-dashboard")
+            i.fa.fa-home.mr-2
+            Game Home
+        li.nav-itemgame-board
+          a.nav-link(href="/game-dashboard/game-scores")
+            i.fa.fa-trophy.mr-2
+            Game Scores
+        li.nav-item
+          a.nav-link(href="/game-dashboard/game-logs")
+            i.fa.fa-file-alt.mr-2
+            Game Logs
+        li.nav-item
+          a.nav-link(href="/game-dashboard/notifications")
+            i.fa.fa-bell.mr-2
+            Game Notifications 
+        li.nav-item
+          a.nav-link(href="/game-dashboard/profile")
+            i.fa.fa-user.mr-2
+            Game Profile
 
     // Game Cards
     section#game-cards.container
       .row
         each game in games
-          .col-md-4.y-3 
+          .col-md-4.y-3.x-4
             .card
-              img.card-img-top(src=game.image, alt=game.name)
+              img.card-img-top(src=`./images/${game.image}`, alt=game.name)
               .card-body
                 h5.card-title #{game.name}
                 p.card-text #{game.description}
