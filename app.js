@@ -35,7 +35,7 @@ app.get('/initial-profile', (req,res)=>{
 app.get('/game-dashboard', (req,res)=>{
     res.render('dashboard',{ games, dummyPlayers})
 })
-app.get('game-dashboard/profile', (req, res) => {
+app.get('/game-dashboard/profile', (req, res) => {
     // Assuming you have a user object defined here
     const user = {
       fullname: 'John Doe',
@@ -48,6 +48,9 @@ app.get('game-dashboard/profile', (req, res) => {
 });
 app.get('/game-dashboard/game-quiz', (req,res)=>{
     res.render('game-quiz')
+})
+app.get('/forgot-password', (req,res)=>{
+    res.render('forgot-password')
 })
 app.get('/game-dashboard/game-scores', (req,res)=>{
     res.render('game-scores')
