@@ -1,9 +1,31 @@
 const express=require('express')
+const mongoose = require('mongoose')
 const app=express()
-const port=3000
-
+const cors=require('cors')
+const logger=require('morgan')
+require('dotenv/config')
+const fs=require('fs')
+//get all routes
+const register=require('./routes/register')
 app.set('view engine', 'pug')
 app.set('views','./views')
+
+//use the imported packages
+app.use(cors({ origin: '*' }))
+app.use(express.json())
+//log all the activities that take place in system.
+app.use(logger('common', {
+  stream: fs.createWriteStream("./logs/access.log",
+  {flags:'a'})
+
+}))
+app.use(logger('dev'))
+
+
+//
+// app.use('/Auth',register)
+
+
 const games = [
     { name: 'Game 1', image: 'game1.jpeg', description: 'Description for Game 1' },
     { name: 'Game 2', image: 'game2.jpeg', description: 'Description for Game 2' },
@@ -27,8 +49,10 @@ app.get('/', (req,res)=>{
     res.render('home')
 })
 app.get('/register', (req,res)=>{
+
     res.render('register')
 })
+app.post('/create-new-player',)
 app.get('/initial-profile', (req,res)=>{
     res.render('initial-profile')
 })
@@ -64,7 +88,6 @@ app.get('/game-dashboard/notifications', (req,res)=>{
 app.get('/login-with-face', (req,res)=>{
     res.render('login-with-face')
 })
-// Start the server
-app.listen (port, ()=>{
-    console.log(`Server is running on port ${port}`)
-})
+//connect to mongodb
+
+  app.listen(process.env.PORT)

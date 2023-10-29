@@ -13,7 +13,7 @@ const userRegister=new mongoose.Schema({
         type:String,
         required:true
     },
-    resetCode:{
+    confirmationCode:{
         type:String,
         required:false
     },

@@ -15,7 +15,7 @@ const userNotifications=new mongoose.Schema({
         required:true
     },
     message:{
-        type:Text,
+        type:String,
         required:false
     },
     mode:{
