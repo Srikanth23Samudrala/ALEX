@@ -16,7 +16,7 @@ html(lang="en")
     section#registration-form.row
       div.col-md-6.mx-auto
         h2 Registration
-        form(action="register.php", method="POST")
+        form(action="/Auth/register-new-player", method="POST")
           .form-group
             label(for="email") Email:
             input.form-control(type="email", id="email", name="email", required)

@@ -23,7 +23,7 @@ app.use(logger('dev'))
 
 
 //
-// app.use('/Auth',register)
+app.use('/Auth',register)
 
 
 const games = [
