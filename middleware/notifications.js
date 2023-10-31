@@ -1,8 +1,7 @@
 const Notifications = require('../models/notifications')
 
-module.exports.sendNotification = async (userId, notificationMessage, notificationTitle) => {
+module.exports.sendNotification = async (userId,channel,message, notificationTitle,mode) => {
     const notificationDetails = new Notifications({
-        notificationId,
         userId,
         channel,
         message,

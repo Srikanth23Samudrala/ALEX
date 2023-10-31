@@ -5,11 +5,15 @@ const cors=require('cors')
 const logger=require('morgan')
 require('dotenv/config')
 const fs=require('fs')
-//get all routes
-const register=require('./routes/register')
+
+
+
+
+
+
 app.set('view engine', 'pug')
 app.set('views','./views')
-
+app.use(express.urlencoded({ extended: true }));
 //use the imported packages
 app.use(cors({ origin: '*' }))
 app.use(express.json())
@@ -22,8 +26,45 @@ app.use(logger('common', {
 app.use(logger('dev'))
 
 
+
+//get all routes
+// const register=require('./routes/register')
+const {
+    registerController,
+    loginController,
+    activateAccountController
+}=require('./controllers/register')
+
+
 //
-app.use('/Auth',register)
+// app.use('/Auth',register)
+// app.post('/create-new-player',)
+
+//1.Authentication
+app.post('/Auth/register-new-player',registerController)
+app.post('/Auth/activate-account', activateAccountController)
+app.post('/Auth/login', loginController)
+
+//2.Profile
+// app.post('/Profile/create-profile', createProfileController)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 const games = [
@@ -48,11 +89,12 @@ const dummyPlayers = [
 app.get('/', (req,res)=>{
     res.render('home')
 })
-app.get('/register', (req,res)=>{
+app.get('/Auth/register-new-player', (req,res)=>{
 
     res.render('register')
 })
-app.post('/create-new-player',)
+// app.get('/Auth/activate-account',)
+
 app.get('/initial-profile', (req,res)=>{
     res.render('initial-profile')
 })
@@ -89,5 +131,6 @@ app.get('/login-with-face', (req,res)=>{
     res.render('login-with-face')
 })
 //connect to mongodb
+mongoose.connect(process.env.DB_CONNECTION)
 
-  app.listen(process.env.PORT)
+app.listen(process.env.PORT)

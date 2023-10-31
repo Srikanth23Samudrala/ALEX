@@ -1,7 +1,7 @@
 const mongoose=require('mongoose')
 //This model is for clients data
 const userRegister=new mongoose.Schema({
-    id:{
+    userId:{
         type:String,
         required:true
     },

@@ -11,6 +11,7 @@ exports.registerController = async (req, res) => {
         const emailExist = await AuthRegister.findOne({
             email: req.body.email
         })
+        console.log(emailExist)
         if (emailExist) {
             return res.status(400).json({
                 'error': 'Email already Exist!'
@@ -31,31 +32,34 @@ exports.registerController = async (req, res) => {
             confirmationCode: confirmationCode
         })
         
-
+        console.log(playerDetails)
         //create a new sp to the database.
-        const newPlayer = await playerDetails.save((err, data) => { 
-            if (err) {
-                return res.status(400).json({
-                    'message':'failure',
-                    'error': err
-                })
-            }
-            nodemailer.sendConfirmationEmailClient(
-                data.email,
-                data.confirmationCode)
+        // const newPlayer = await playerDetails.save((err, data) => { 
+        //     if (err) {
+        //         return res.status(400).json({
+        //             'message':'failure',
+        //             'error': err
+        //         })
+        //     }
+        //     nodemailer.sendConfirmationEmailClient(
+        //         data.email,
+        //         data.confirmationCode)
             
-        })
+        // })
+        const newPlayer = await playerDetails.save();
+        nodemailer.sendConfirmationEmailClient(newPlayer.email, newPlayer.confirmationCode);
         //send the confirmation code to the email using nodemailer
                 
         //save the new client to the database
         // const newClient = await CRegister.create(req.body)
 
         //send the response to the client
-        return res.status(200).json({
-            'message': 'registered successfully! Check your email for activation link',
-            newPlayer
-        })
+        // return res.status(200).json({
+        //     'message': 'registered successfully! Check your email for activation link',
+        //     newPlayer
+        // })
 
+        return res.send("registered successfully")
     } catch (e) {
         return res.status(400).json({
             status: 'failure',
@@ -86,8 +90,10 @@ exports.activateAccountController = async (req, res) => {
         }
         var notificationTitle = 'Welcome to Alex-game'
         var notificationMessage='Start quiz game and advance your knowledge'
+        var channel='all'
+        var mode='ingame'
         //send a notification to the user.
-        const messageSent=await sendNotification(user._id, notificationMessage, notificationTitle)
+        const messageSent=await sendNotification(user.userId,channel,notificationMessage, notificationTitle,mode)
         console.log(messageSent)
         res.status(200).json({
             'message': 'Account activated successfully',
@@ -100,6 +106,7 @@ exports.activateAccountController = async (req, res) => {
         })
     }
 }
+
 //login with email/password
 exports.loginController = async (req, res) => {
     //check if the email exists
@@ -123,15 +130,15 @@ exports.loginController = async (req, res) => {
         })
     }
     //check wheather the user has an active profile.
-    const profileCreated = await CProfile.findOne({
-        userId:emailExist._id
-    })
-    if (!profileCreated) {
-        return res.status(404).json({
-            userid: emailExist._id,
-            profile:null
-        })  
-    }
+    // const profileCreated = await Profile.findOne({
+    //     userId:emailExist._id
+    // })
+    // if (!profileCreated) {
+    //     return res.status(404).json({
+    //         userid: emailExist._id,
+    //         profile:null
+    //     })  
+    // }
     //check if the password is correct
     const validPassword = await bcrypt.compare(req.body.password, emailExist.password)
     if (!validPassword) {
@@ -144,8 +151,8 @@ exports.loginController = async (req, res) => {
     if (!res.headersSent) {
         return res.header('userid', userid).json({
             'message': 'logged in successfully',
-            'userid': userid,
-            profile: profileCreated
+            'userid': userid
+            // profile: profileCreated
         })
     }
 }

@@ -1,14 +1,10 @@
 const mongoose=require('mongoose')
 //This model is for clients data
 const userNotifications=new mongoose.Schema({
-    notificationId:{
-        type:String,
-        required:true
-    },
     channel:{
         type:String,
-        required:true,
-        enum: ['all','specific']
+        enum: ['all','specific'],
+        default:'all'
     },
     userId:{
         type:String,

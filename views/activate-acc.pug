@@ -3,7 +3,7 @@ html(lang="en")
   head
     meta(charset="UTF-8")
     meta(name="viewport", content="width=device-width, initial-scale=1.0")
-    title Registration - ALEX Project
+    title Activation - ALEX Project
     link(href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css", rel="stylesheet")
   body
     // Banner/hero section
@@ -12,19 +12,17 @@ html(lang="en")
       h1.display-4 Welcome to ALEX Project
       p.lead An online multiplayer CS Jeopardy-style game
 
-    // Registration Form
-    section#registration-form.row
+    // Activation Form
+    section#activation-form.row
       div.col-md-6.mx-auto
-        h2 Registration
-        form(action="/Auth/register-new-player", method="POST")
+        h2 Enter Activation Code
+        p Please check your email for the 6-digit activation code.
+        form(action="/Auth/activate-account", method="POST")
           .form-group
-            label(for="email") Email:
-            input.form-control(type="email", id="email", name="email", required)
+            label(for="activationCode") Activation Code:
+            input.form-control(type="text", id="activationCode", name="activationCode", required)
           .form-group
-            label(for="password") Password:
-            input.form-control(type="password", id="password", name="password", required)
-          .form-group
-          button.btn.btn-primary(type="submit") Register
+          button.btn.btn-primary(type="submit") Activate Account
           p.text-center.mt-3
             a(href="/") Login
             |  | 
