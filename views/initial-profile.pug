@@ -16,7 +16,7 @@ html(lang="en")
     section#profile-form.row
       div.col-md-6.mx-auto
         h2 Your Profile
-        form(action="update-profile.php", method="POST")
+        form(action="/Profile/create-profile", method="POST")
           .form-group
             label(for="avatar") Avatar:
             input.form-control(type="file", id="avatar", name="avatar")
@@ -29,6 +29,10 @@ html(lang="en")
           .form-group
             label(for="email") Email:
             input.form-control(type="email", id="email", name="email", required)
+          .form-group
+            label Privacy:
+            input.form-control(type="checkbox", id="privacy", name="privacy", value="private")
+            label(for="privacy") Private
           button.btn.btn-primary(type="submit") Update Profile
 
 

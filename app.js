@@ -6,11 +6,6 @@ const logger=require('morgan')
 require('dotenv/config')
 const fs=require('fs')
 
-
-
-
-
-
 app.set('view engine', 'pug')
 app.set('views','./views')
 app.use(express.urlencoded({ extended: true }));
@@ -32,7 +27,9 @@ app.use(logger('dev'))
 const {
     registerController,
     loginController,
-    activateAccountController
+    activateAccountController,
+    createProfileController,
+    getProfileData
 }=require('./controllers/register')
 
 
@@ -46,37 +43,19 @@ app.post('/Auth/activate-account', activateAccountController)
 app.post('/Auth/login', loginController)
 
 //2.Profile
-// app.post('/Profile/create-profile', createProfileController)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+app.post('/Profile/create-profile/:userId', createProfileController)
 
 
 const games = [
-    { name: 'Game 1', image: 'game1.jpeg', description: 'Description for Game 1' },
-    { name: 'Game 2', image: 'game2.jpeg', description: 'Description for Game 2' },
-    { name: 'Game 3', image: 'game3.jpeg', description: 'Description for Game 3' },
-    { name: 'Game 4', image: 'game4.jpeg', description: 'Description for Game 4' },
-    { name: 'Game 5', image: 'game5.png', description: 'Description for Game 5' },
-    { name: 'Game 6', image: 'game6.png', description: 'Description for Game 6' },
-    { name: 'Game 7', image: 'game7.jpeg', description: 'Description for Game 7' },
-    { name: 'Game 8', image: 'https://i.pravatar.cc/150', description: 'Description for Game 8' },
-    { name: 'Game 9', image: 'https://i.pravatar.cc/150', description: 'Description for Game 9' },
+    { id:"1", name: 'Game 1', image: 'game1.jpeg', description: 'Description for Game 1' },
+    { id:"2",  name: 'Game 2', image: 'game2.jpeg', description: 'Description for Game 2' },
+    { id:"3",  name: 'Game 3', image: 'game3.jpeg', description: 'Description for Game 3' },
+    { id:"4",  name: 'Game 4', image: 'game4.jpeg', description: 'Description for Game 4' },
+    { id:"5",  name: 'Game 5', image: 'game5.png', description: 'Description for Game 5' },
+    { id:"6",  name: 'Game 6', image: 'game6.png', description: 'Description for Game 6' },
+    { id:"7",  name: 'Game 7', image: 'game7.jpeg', description: 'Description for Game 7' },
+    { id:"8",  name: 'Game 8', image: 'https://i.pravatar.cc/150', description: 'Description for Game 8' },
+    { id:"9", name: 'Game 9', image: 'https://i.pravatar.cc/150', description: 'Description for Game 9' },
     // Add more game objects as needed
 ];
 // Define the dummyPlayers array (an example)
@@ -93,25 +72,23 @@ app.get('/Auth/register-new-player', (req,res)=>{
 
     res.render('register')
 })
-// app.get('/Auth/activate-account',)
+app.get('/Auth/activate-account',(req,res)=>{
 
+    res.render('activate-acc')
+})
+app.get('/admin-page',(req,res)=>{
+    res.render('admin-page')
+})
+app.get('/admin-dashboard', (req,res)=>{
+    res.render('admin-dashboard')
+})
 app.get('/initial-profile', (req,res)=>{
     res.render('initial-profile')
 })
 app.get('/game-dashboard', (req,res)=>{
     res.render('dashboard',{ games, dummyPlayers})
 })
-app.get('/game-dashboard/profile', (req, res) => {
-    // Assuming you have a user object defined here
-    const user = {
-      fullname: 'John Doe',
-      username: 'johndoe123',
-      email: 'johndoe@example.com'
-    };
-    
-    // Render the Pug template with the user object
-    res.render('profile', { user });
-});
+app.get('/game-dashboard/profile',getProfileData);
 app.get('/game-dashboard/game-quiz', (req,res)=>{
     res.render('game-quiz')
 })

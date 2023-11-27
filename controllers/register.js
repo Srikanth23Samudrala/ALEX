@@ -3,7 +3,7 @@ const uuid = require('uuid');
 const nodemailer=require('../middleware/nodemailer.config')
 const {sendNotification}=require('../middleware/notifications')
 const AuthRegister=require('../models/user-register')
-
+const Profile=require('../models/user-profile')
 //register the game player
 exports.registerController = async (req, res) => {
     try {
@@ -59,7 +59,9 @@ exports.registerController = async (req, res) => {
         //     newPlayer
         // })
 
-        return res.send("registered successfully")
+        // return res.send("registered successfully")
+        return res.render('activate-acc')
+
     } catch (e) {
         return res.status(400).json({
             status: 'failure',
@@ -72,7 +74,8 @@ exports.registerController = async (req, res) => {
 exports.activateAccountController = async (req, res) => {
     try {
         //get the confirmation code from the request body
-        const { confirmationCode } = req.body
+        const confirmationCode  = req.body.confirmationCode
+        console.log(confirmationCode)
         //check if the confirmation code is correct
         const user = await AuthRegister.findOneAndUpdate({
             confirmationCode: confirmationCode
@@ -84,7 +87,7 @@ exports.activateAccountController = async (req, res) => {
             }
         )
         if (!user) {
-            res.status(400).json({
+            return res.status(400).json({
                 'error': 'Invalid confirmation code'
             })
         }
@@ -94,11 +97,13 @@ exports.activateAccountController = async (req, res) => {
         var mode='ingame'
         //send a notification to the user.
         const messageSent=await sendNotification(user.userId,channel,notificationMessage, notificationTitle,mode)
+        const userId=user.userId
         console.log(messageSent)
-        res.status(200).json({
-            'message': 'Account activated successfully',
-            user
-        })
+        // res.status(200).json({
+        //     'message': 'Account activated successfully',
+        //     user
+        // })
+        return res.render('initial-profile',{userId})
     } catch (e) {
         res.status(400).json({
             status: 'failure',
@@ -149,10 +154,80 @@ exports.loginController = async (req, res) => {
     //allow the user to login
     const userid = emailExist._id
     if (!res.headersSent) {
-        return res.header('userid', userid).json({
-            'message': 'logged in successfully',
-            'userid': userid
-            // profile: profileCreated
+        // return res.header('userid', userid).json({
+        //     'message': 'logged in successfully',
+        //     'userid': userid
+        //     // profile: profileCreated
+        // })
+        // return res.render('dashboard',{userid})
+        const games = [
+            { name: 'Game 1', image: 'game1.jpeg', description: 'Description for Game 1' },
+            { name: 'Game 2', image: 'game2.jpeg', description: 'Description for Game 2' },
+            { name: 'Game 3', image: 'game3.jpeg', description: 'Description for Game 3' },
+            { name: 'Game 4', image: 'game4.jpeg', description: 'Description for Game 4' },
+            { name: 'Game 5', image: 'game5.png', description: 'Description for Game 5' },
+            { name: 'Game 6', image: 'game6.png', description: 'Description for Game 6' },
+            { name: 'Game 7', image: 'game7.jpeg', description: 'Description for Game 7' },
+            { name: 'Game 8', image: 'https://i.pravatar.cc/150', description: 'Description for Game 8' },
+            { name: 'Game 9', image: 'https://i.pravatar.cc/150', description: 'Description for Game 9' },
+            // Add more game objects as needed
+        ];
+        const dummyPlayers = [
+            { name: 'Player 1' },
+            { name: 'Player 2' },
+            // Add more players as needed
+          ];
+        return res.render('dashboard',{ games, dummyPlayers})
+    }
+}
+exports.createProfileController=async(req,res)=>{
+    try {
+        // Retrieve data from the form
+        const userId=req.params.userId
+        const { username, avatarLink,fullname, privacy } = req.body;
+        
+        console.log(req.body)
+        // Create a new Profile document
+        const newProfile = new Profile({
+            userId, // You might want to use the user ID from the authenticated user
+            fullname,
+            username,
+            // Assuming 'avatar' is a file upload, save the link to the uploaded file
+            avatarLink: req.file ? req.file.path : null,
+            privacy: privacy || 'public', // Set privacy to 'public' by default if not specified
+        });
+        console.log(newProfile)
+
+
+        // Save the new profile to the database
+        await newProfile.save();
+
+        // Send a response indicating success
+        res.status(200).json({
+            message: 'Profile created successfully',
+        });
+    } catch (e) {
+        // Handle any errors
+        res.status(400).json({
+            status: 'failure',
+            message: e.message
         })
     }
 }
+exports.getProfileData=async (req, res) => {
+    try {
+      const userId = "405aeb82-c5f1-4e1f-8f6d-378ba5f2d81c";
+  
+      // Retrieve the user's profile data from the database based on userId
+      const user = await Profile.findOne({ userId });
+  
+      if (!user) {
+        return res.status(404).json({ message: 'Profile not found' });
+      }
+  
+      // Render the profile template and pass the user data to it
+      res.render('profile', { user });
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  }

@@ -5,6 +5,10 @@ const userProfile=new mongoose.Schema({
         required:true
 
     },
+    fullname:{
+        type:String,
+        required:true
+    },
     username:{
         type:String,
         required:true

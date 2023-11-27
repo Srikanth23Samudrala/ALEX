@@ -16,17 +16,17 @@ html(lang="en")
     section#login-form.row
       div.col-md-6.mx-auto
         h2 Login
-        form(action="login.php", method="POST")
+        form(action="/Auth/login", method="POST")
           .form-group
-            label(for="username") Username:
-            input.form-control(type="text", id="username", name="username", required)
+            label(for="email") Email:
+            input.form-control(type="email", id="email", name="email", required)
           .form-group
             label(for="password") Password:
             input.form-control(type="password", id="password", name="password", required)
           button.btn.btn-primary(type="submit", id="login-button") Login
           a(href="forgot-password") Forgot Password?
           p.text-center.mt-3
-            a(href="register") Register
+            a(href="/Auth/register-new-player") Register
             |  | 
             a(href="login-with-face") Login with Face
 

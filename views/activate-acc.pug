@@ -19,8 +19,8 @@ html(lang="en")
         p Please check your email for the 6-digit activation code.
         form(action="/Auth/activate-account", method="POST")
           .form-group
-            label(for="activationCode") Activation Code:
-            input.form-control(type="text", id="activationCode", name="activationCode", required)
+            label(for="confirmationCode") Activation Code:
+            input.form-control(type="text", id="confirmationCode", name="confirmationCode", required)
           .form-group
           button.btn.btn-primary(type="submit") Activate Account
           p.text-center.mt-3

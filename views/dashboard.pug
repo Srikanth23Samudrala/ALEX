@@ -42,7 +42,9 @@ html(lang="en")
               .card-body
                 h5.card-title #{game.name}
                 p.card-text #{game.description}
-                button.btn.btn-primary(type="button", data-toggle="modal", data-target="#gameModal") Play
+                //- button.btn.btn-primary(type="button", data-toggle="modal", data-target="#gameModal") Play
+                p.text-center.mt-3
+                  a(href="/game-dashboard/game-quiz") Play
       // Main Game Modal
       #gameModal.modal.fade(tabindex="-1" role="dialog" aria-labelledby="gameModalLabel" aria-hidden="true")
         .modal-dialog
