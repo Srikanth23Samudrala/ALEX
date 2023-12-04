@@ -29,10 +29,14 @@ const {
     loginController,
     activateAccountController,
     createProfileController,
-    getProfileData
+    getProfileData,
+    sendResetLinkToEmail
 }=require('./controllers/register')
 
-
+const {
+    addQuestiontoBank,
+    showAllQuestions 
+}=require('./controllers/admin.js')
 //
 // app.use('/Auth',register)
 // app.post('/create-new-player',)
@@ -82,6 +86,11 @@ app.get('/admin-page',(req,res)=>{
 app.get('/admin-dashboard', (req,res)=>{
     res.render('admin-dashboard')
 })
+app.get('/admin-dashboard/add-question', (req,res)=>{
+    res.render('add-question')
+})
+app.post('/admin-dashboard/add-question',addQuestiontoBank)
+app.get('/admin-dashboard/view-question',showAllQuestions)
 app.get('/initial-profile', (req,res)=>{
     res.render('initial-profile')
 })
@@ -95,6 +104,7 @@ app.get('/game-dashboard/game-quiz', (req,res)=>{
 app.get('/forgot-password', (req,res)=>{
     res.render('forgot-password')
 })
+app.post('/forgot-password', sendResetLinkToEmail)
 app.get('/game-dashboard/game-scores', (req,res)=>{
     res.render('game-scores')
 })

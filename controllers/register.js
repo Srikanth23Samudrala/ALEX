@@ -1,9 +1,11 @@
 const bcrypt=require('bcrypt')
+const jwt = require('jsonwebtoken')
 const uuid = require('uuid');
 const nodemailer=require('../middleware/nodemailer.config')
 const {sendNotification}=require('../middleware/notifications')
 const AuthRegister=require('../models/user-register')
 const Profile=require('../models/user-profile')
+
 //register the game player
 exports.registerController = async (req, res) => {
     try {
@@ -231,3 +233,89 @@ exports.getProfileData=async (req, res) => {
       res.status(500).json({ message: error.message });
     }
   }
+  exports.sendResetLinkToEmail = async (req, res) => {
+    try {
+        // console.log(req.body)
+                //check for email address existence
+                const playerEmail = await AuthRegister.findOne({
+                    email:req.body.email
+                })
+                console.log(playerEmail)
+                //generate a alphanumeric token that is validated
+                const payload = {
+                    user: {
+                        id:playerEmail.userId
+                    }
+                }
+                
+
+                jwt.sign(payload, "anystring", { expiresIn: 1000 }, function (err, token) {
+                    if (err) {
+                        res.send(err)
+                    }
+                    res.status(200).json({
+                        token,
+                        playerEmail
+                    })
+                })
+
+                console.log(jwt)
+                
+                const confirmationCode = Math.floor(100000 + Math.random() * 900000)
+    
+                if (!playerEmail) {
+                    res.status(400).json({
+                        'error':'Email does not Exist'
+                    })
+                } else {
+                    nodemailer.sendPasswordResetEmail(
+                        playerEmail,
+                        confirmationCode)
+                    res.status(200).json({
+                        status: 'success',
+                        message: 'Password reset link sent to your email'
+                    })
+                }
+    } catch (e) {
+        res.status(400).json({
+            status: 'failure',
+            message:e.message
+        })
+    }
+}
+
+
+
+
+
+  exports.resetPassword = async (req, res) => {
+    try {
+            //get the new password and email
+        const password = req.body.newpassword
+        
+        const email = req.body.email
+        //send the credentials to the resetPassword to the middleware 
+        const resetSuccessful = await resetPassword(email, password)
+        
+        console.log(resetSuccessful=='success')
+        if (resetSuccessful == 'success') {
+            return res.status(201).json({
+                status: 'success',
+                message:'Password Updated successfully'
+            })
+        }
+        
+        return res.status(400).json({
+            status: 'failure',
+            message:'Error when updating Password'
+        })
+    
+    } catch (error) {
+        return res.status(400).json({
+            status: 'failure',
+            message:error.message
+        })
+        
+    }
+    
+    }
