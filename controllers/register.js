@@ -269,7 +269,7 @@ exports.getProfileData=async (req, res) => {
                     })
                 } else {
                     nodemailer.sendPasswordResetEmail(
-                        playerEmail,
+                        playerEmail.email,
                         confirmationCode)
                     res.status(200).json({
                         status: 'success',

@@ -16,20 +16,23 @@ html(lang="en")
     // Form to add a question
     section.container.mt-4
       h2 Add Question
-      form(action="/admin-dashboard/add-question", method="POST")
+      form(action="/admin-dashboard/add-question", method="POST" enctype="multipart/form-data")
         .mb-3
           label(for="questionText") Question Text:
-          input#questionText.form-control(type="text", name="questionText", required)
+          input#questionText.form-control(type="text", name="questionText")
         .mb-3
           label(for="answers") Answers (comma-separated):
-          input#answers.form-control(type="text", name="answers", required)
+          input#answers.form-control(type="text", name="answers")
         .mb-3
           label(for="correctAnswer") Correct Answer:
-          input#correctAnswer.form-control(type="text", name="correctAnswer", required)
+          input#correctAnswer.form-control(type="text", name="correctAnswer")
         .mb-3
           label(for="difficulty") Difficulty Level:
-          select#difficulty.form-select(name="difficulty", required)
+          select#difficulty.form-select(name="difficulty")
             option(value="easy") Easy
             option(value="medium") Medium
             option(value="hard") Hard
+        .mb-3
+          label(for="csvFile") Upload CSV File:
+          input#csvFile.form-control(type="file", name="csvFile", accept=".csv")
         button.btn.btn-primary(type="submit") Add Question

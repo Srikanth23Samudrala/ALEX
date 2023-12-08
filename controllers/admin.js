@@ -1,13 +1,16 @@
 const QuestionBank = require('../models/questions-bank');
+const csv = require('csv-parser');
+const fs = require('fs');
 
-const {generateQuestionId}=require('../middleware/Utility-functions')
-// Handle form submission to add a question
-exports.addQuestiontoBank= async (req, res) => {
+const { generateQuestionId } = require('../middleware/Utility-functions');
+
+exports.addQuestiontoBank = async (req, res) => {
   try {
-    const { questionText, answers, correctAnswer, difficulty } = req.body;
+    // Ensure req.body is defined and has the expected properties
+    const { questionText, answers, correctAnswer, difficulty } = req.body || {};
 
-    // Split answers string into an array
-    const answerArray = answers.split(',').map(answer => answer.trim());
+    // If answers is undefined or not a string, set it to an empty string
+    const answerArray = (typeof answers === 'string' ? answers : '').split(',').map(answer => answer.trim());
 
     // Create a new question object
     const newQuestion = {
@@ -16,35 +19,83 @@ exports.addQuestiontoBank= async (req, res) => {
       correctAnswer,
       difficulty
     };
-    const timestamp = Date.now().toString();
-    const random = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
-    const generateQuestionId=`${timestamp}-${random}`
-    console.log(generateQuestionId)
-    // Save the new question to the database using Mongoose
-    const question = new QuestionBank({
-      questionId: generateQuestionId, // Ensure you generate a questionId
-      questions: [newQuestion]
-    });
 
-    await question.save();
+    if (req.file) {
+      const questions = [];
 
-    res.status(201).send('Question added successfully!');
+      fs.createReadStream(req.file.path)
+        .pipe(csv())
+        .on('data', row => {
+          // Process each row from the CSV file
+          const { questionText, answers, correctAnswer, difficulty } = row;
+
+          // If answers is undefined or not a string, set it to an empty string
+          const answerArray = (typeof answers === 'string' ? answers : '').split(',').map(answer => answer.trim());
+
+          // Create a question object
+          const csvQuestion = {
+            questionText,
+            answers: answerArray,
+            correctAnswer,
+            difficulty
+          };
+
+          // Log each question ID to the console
+          const generateQuestionId = generateQuestionId(); // Assuming generateQuestionId is a function that generates an ID
+          console.log(`Question added with ID: ${generateQuestionId}`);
+
+          // Push the question object to the questions array
+          questions.push(csvQuestion);
+        })
+        .on('end', async () => {
+          const timestamp = Date.now().toString();
+          const random = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
+          questions.forEach(async (q, index) => {
+            const generateQuestionId = `${timestamp}-${random}-${index}`;
+            const question = new QuestionBank({
+              questionId: generateQuestionId,
+              questions: [q]
+            });
+
+            await question.save();
+          });
+
+          // Log the total number of questions added to the database
+          console.log(`Total questions added: ${questions.length}`);
+
+          fs.unlinkSync(req.file.path);
+
+          res.status(201).send('Questions added successfully!');
+        });
+    } else {
+      const timestamp = Date.now().toString();
+      const random = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
+      const generateQuestionId = `${timestamp}-${random}`;
+
+      const question = new QuestionBank({
+        questionId: generateQuestionId,
+        questions: [newQuestion]
+      });
+
+      await question.save();
+
+      res.status(201).send('Question added successfully!');
+    }
   } catch (error) {
     console.error('Error:', error);
     res.status(500).send('An error occurred while adding the question.');
   }
-}
-// Controller function to show all questions in the question bank
+};
+
 exports.showAllQuestions = async (req, res) => {
-    try {
-      const questions = await QuestionBank.find({}); // Retrieve all questions from the database
-      console.log(questions.length)
-      res.render('view-question', { questions }); // Render a Pug file to display all questions
-    } catch (error) {
-      res.status(500).json({ 
-        status: 'failure',
-        message: 'An error occurred while fetching questions.'
-      });
-    }
-  };
-  
+  try {
+    const questions = await QuestionBank.find({});
+    console.log(`Total number of questions: ${questions.length}`);
+    res.render('view-question', { questions });
+  } catch (error) {
+    res.status(500).json({
+      status: 'failure',
+      message: 'An error occurred while fetching questions.'
+    });
+  }
+};
